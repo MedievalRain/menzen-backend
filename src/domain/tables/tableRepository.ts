@@ -30,6 +30,21 @@ export class TableRepository {
   }
 
   public async getTables(userId: string): Promise<Table[]> {
-    return sql<Table[]>`SELECT id,name FROM tables WHERE user_id=${userId} ORDER BY created_at DESC`;
+    return sql<Table[]>`
+        SELECT 
+            t.id,
+            t.name,
+            COUNT(r.id) AS count
+        FROM 
+            tables t
+        LEFT JOIN 
+            rows r ON t.id = r.table_id
+        WHERE 
+            t.user_id = ${userId}
+        GROUP BY 
+            t.id, t.name
+        ORDER BY 
+            t.created_at DESC
+    `;
   }
 }
