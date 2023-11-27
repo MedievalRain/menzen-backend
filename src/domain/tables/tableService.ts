@@ -10,7 +10,7 @@ class TableService {
   }
 
   public async renameTable(data: unknown, userId: string) {
-    const { name, tableId } = parseRenameTableInput(data);
+    const { name, id: tableId } = parseRenameTableInput(data);
     await this.tableRepository.renameTable(name, tableId, userId);
   }
 }

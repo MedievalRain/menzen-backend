@@ -15,7 +15,7 @@ export const parseNewTableInput = (data: unknown) => {
 
 const renameTableSchema = z.object({
   name: z.string().min(1),
-  tableId: z.string().uuid(),
+  id: z.string().uuid(),
 });
 
 export const parseRenameTableInput = (data: unknown) => {
