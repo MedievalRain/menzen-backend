@@ -14,4 +14,13 @@ tableRouter.post("/new", async (req, res, next) => {
   }
 });
 
+tableRouter.post("/rename", async (req, res, next) => {
+  try {
+    await tableService.renameTable(req.body, res.locals.userId);
+    res.status(200).json({ message: "Table renamed" });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export { tableRouter };

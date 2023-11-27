@@ -1,4 +1,5 @@
 import { sql } from "../../config/database/connection";
+import { TableNotExistsError } from "../../errors/TableNotExistsError";
 import { UserNotExistsError } from "../../errors/UserNotExistsError";
 
 export class TableRepository {
@@ -16,5 +17,9 @@ export class TableRepository {
       }
       throw error;
     }
+  }
+  public async renameTable(name: string, tableId: string, userId: string) {
+    const result = await sql`UPDATE tables set ${sql({ name })} WHERE id=${tableId} AND user_id=${userId}`;
+    if (result.count === 0) throw new TableNotExistsError();
   }
 }

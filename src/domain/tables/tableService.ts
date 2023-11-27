@@ -1,4 +1,4 @@
-import { parseNewTableInput } from "./tableValidation";
+import { parseNewTableInput, parseRenameTableInput } from "./tableValidation";
 import { TableRepository } from "./tableRepository";
 
 class TableService {
@@ -7,6 +7,11 @@ class TableService {
   public async createTable(data: unknown, userId: string) {
     const { name } = parseNewTableInput(data);
     await this.tableRepository.createTable(name, userId);
+  }
+
+  public async renameTable(data: unknown, userId: string) {
+    const { name, tableId } = parseRenameTableInput(data);
+    await this.tableRepository.renameTable(name, tableId, userId);
   }
 }
 
