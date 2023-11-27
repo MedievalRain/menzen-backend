@@ -5,4 +5,5 @@ export type ErrorTypes =
   | "USER_EXISTS"
   | "USER_NOT_EXISTS"
   | "USER_NOT_ACTIVE"
-  | "USER_VERIFIED";
+  | "USER_VERIFIED"
+  | "INVALID_JWT";
