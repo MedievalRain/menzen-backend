@@ -1,4 +1,4 @@
-import { parseNewTableInput, parseRenameTableInput } from "./tableValidation";
+import { parseDeleteTableInput, parseNewTableInput, parseRenameTableInput } from "./tableValidation";
 import { TableRepository } from "./tableRepository";
 
 class TableService {
@@ -12,6 +12,11 @@ class TableService {
   public async renameTable(data: unknown, userId: string) {
     const { name, id: tableId } = parseRenameTableInput(data);
     await this.tableRepository.renameTable(name, tableId, userId);
+  }
+
+  public async deleteTable(data: unknown, userId: string) {
+    const { id: tableId } = parseDeleteTableInput(data);
+    await this.tableRepository.deleteTable(tableId, userId);
   }
 }
 

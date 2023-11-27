@@ -22,4 +22,9 @@ export class TableRepository {
     const result = await sql`UPDATE tables set ${sql({ name })} WHERE id=${tableId} AND user_id=${userId}`;
     if (result.count === 0) throw new TableNotExistsError();
   }
+
+  public async deleteTable(tableId: string, userId: string) {
+    const result = await sql`DELETE FROM tables WHERE id=${tableId} AND user_id=${userId}`;
+    if (result.count === 0) throw new TableNotExistsError();
+  }
 }

@@ -25,3 +25,15 @@ export const parseRenameTableInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+
+const deleteTableSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export const parseDeleteTableInput = (data: unknown) => {
+  try {
+    return deleteTableSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};

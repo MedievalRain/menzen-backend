@@ -5,7 +5,7 @@ import { tableService } from "../../domain/tables/tableService";
 const tableRouter = express.Router();
 tableRouter.use(authMiddleware);
 
-tableRouter.post("/new", async (req, res, next) => {
+tableRouter.put("/new", async (req, res, next) => {
   try {
     await tableService.createTable(req.body, res.locals.userId);
     res.status(200).json({ message: "Table created" });
@@ -18,6 +18,15 @@ tableRouter.post("/rename", async (req, res, next) => {
   try {
     await tableService.renameTable(req.body, res.locals.userId);
     res.status(200).json({ message: "Table renamed" });
+  } catch (error) {
+    next(error);
+  }
+});
+
+tableRouter.delete("/", async (req, res, next) => {
+  try {
+    await tableService.deleteTable(req.query, res.locals.userId);
+    res.status(200).json({ message: "Table deleted" });
   } catch (error) {
     next(error);
   }
