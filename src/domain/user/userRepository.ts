@@ -2,7 +2,7 @@ import { sql } from "../../config/database/connection";
 import { UserExistsError } from "../../errors/UserExistsError";
 
 export class UserRepository {
-  public async createUser(email: string, passwordHash: string) {
+  public async createUser(email: string, passwordHash: string): Promise<string> {
     try {
       const [row] = await sql`INSERT INTO users ${sql({
         email,
@@ -16,6 +16,7 @@ export class UserRepository {
           throw new UserExistsError();
         }
       }
+      throw error;
     }
   }
 }
