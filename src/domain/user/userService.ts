@@ -1,4 +1,4 @@
-import { generatePasswordHash } from "./authUtils";
+import { generatePasswordHash } from "./passwordUtils";
 import { sendVerificationEmail } from "./emailUtils";
 import { UserRepository } from "./userRepository";
 import { parseAuthInput } from "./userValidation";
