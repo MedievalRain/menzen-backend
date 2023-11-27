@@ -24,7 +24,7 @@ export class UserRepository {
   }
 
   public async verifyEmail(id: string) {
-    const rows = await sql<IsVerifiedResponse[]>`SELECT isVerified FROM users WHERE id=${id}`;
+    const rows = await sql<IsVerifiedResponse[]>`SELECT is_verified FROM users WHERE id=${id}`;
     if (rows.length === 0) {
       throw new UserNotExistsError();
     } else if (rows[0].isVerified) {
