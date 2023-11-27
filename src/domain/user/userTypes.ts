@@ -8,4 +8,5 @@ export interface IsVerifiedResponse {
 export interface UserCredentialsResponse {
   id: string;
   passwordHash: string;
+  isVerified: boolean;
 }

@@ -4,6 +4,7 @@ import { UserRepository } from "./userRepository";
 import { parseAuthInput, parseUserId } from "./userValidation";
 import { WrongPasswordError } from "../../errors/WrongPasswordError";
 import { generateJWT } from "../../utils/jwt";
+import { UserNotVerifiedError } from "../../errors/UserNotVerifiedError";
 
 class UserService {
   constructor(private userRepository: UserRepository) {}
@@ -22,7 +23,8 @@ class UserService {
 
   public async login(data: unknown) {
     const { email, password } = parseAuthInput(data);
-    const { id, passwordHash } = await this.userRepository.getUserCredentials(email);
+    const { id, passwordHash, isVerified } = await this.userRepository.getUserCredentials(email);
+    if (!isVerified) throw new UserNotVerifiedError();
     const isPasswordValid = await validatePassword(password, passwordHash);
     if (isPasswordValid) {
       return generateJWT(id);

@@ -38,7 +38,7 @@ export class UserRepository {
   }
 
   public async getUserCredentials(email: string) {
-    const rows = await sql<UserCredentialsResponse[]>`SELECT id,passwordHash FROM users WHERE email=${email}`;
+    const rows = await sql<UserCredentialsResponse[]>`SELECT id,password_hash,is_verified FROM users WHERE email=${email}`;
     if (rows.length === 0) {
       throw new UserNotExistsError();
     }
