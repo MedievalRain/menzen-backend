@@ -13,28 +13,28 @@ async function createTables() {
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         name VARCHAR(255) NOT NULL,
         userId UUID NOT NULL,
-        FOREIGN KEY (userId) REFERENCES users(id)
+        FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
     );`;
   await sql`CREATE TABLE columns (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         name VARCHAR(255) NOT NULL,
         tableId UUID NOT NULL,
         dataType TEXT NOT NULL,
-        FOREIGN KEY (tableId) REFERENCES tables(id)
+        FOREIGN KEY (tableId) REFERENCES tables(id) ON DELETE CASCADE
     );`;
   await sql`CREATE TABLE rows (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     tableId UUID NOT NULL,
     createdAt TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (tableId) REFERENCES tables(id)
+    FOREIGN KEY (tableId) REFERENCES tables(id) ON DELETE CASCADE
     );`;
   await sql`CREATE TABLE rows_values (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         value TEXT NOT NULL,
         rowId UUID NOT NULL,
         columnId UUID NOT NULL,
-        FOREIGN KEY (rowId) REFERENCES rows(id),
-        FOREIGN KEY (columnId) REFERENCES columns(id)
+        FOREIGN KEY (rowId) REFERENCES rows(id) ON DELETE CASCADE,
+        FOREIGN KEY (columnId) REFERENCES columns(id) ON DELETE CASCADE
     );`;
 }
 createTables().then(() => {
