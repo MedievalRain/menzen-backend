@@ -31,5 +31,13 @@ tableRouter.delete("/", async (req, res, next) => {
     next(error);
   }
 });
+tableRouter.get("/", async (req, res, next) => {
+  try {
+    const tables = await tableService.getTables(res.locals.userId);
+    res.status(200).json(tables);
+  } catch (error) {
+    next(error);
+  }
+});
 
 export { tableRouter };

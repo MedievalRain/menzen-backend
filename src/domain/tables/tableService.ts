@@ -18,6 +18,10 @@ class TableService {
     const { id: tableId } = parseDeleteTableInput(data);
     await this.tableRepository.deleteTable(tableId, userId);
   }
+
+  public async getTables(userId: string) {
+    return this.tableRepository.getTables(userId);
+  }
 }
 
 export const tableService = new TableService(new TableRepository());
