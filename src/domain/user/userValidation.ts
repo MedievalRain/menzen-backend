@@ -13,3 +13,14 @@ export const parseAuthInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+
+const userIdInputSchema = z.object({
+  id: z.string().uuid(),
+});
+export const parseUserId = (data: unknown) => {
+  try {
+    return userIdInputSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};
