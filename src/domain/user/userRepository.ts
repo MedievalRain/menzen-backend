@@ -1,6 +1,8 @@
 import { sql } from "../../config/database/connection";
 import { UserExistsError } from "../../errors/UserExistsError";
-import { IdResponse } from "./userTypes";
+import { UserNotExistsError } from "../../errors/UserNotExistsError";
+import { UserVerifiedError } from "../../errors/UserVerifiedError";
+import { IdResponse, IsVerifiedResponse } from "./userTypes";
 
 export class UserRepository {
   public async createUser(email: string, passwordHash: string): Promise<string> {
@@ -18,6 +20,20 @@ export class UserRepository {
         }
       }
       throw error;
+    }
+  }
+
+  public async verifyEmail(id: string) {
+    const rows = await sql<IsVerifiedResponse[]>`SELECT isVerified FROM users WHERE ${sql({ id })}`;
+    if (rows.length === 0) {
+      throw new UserNotExistsError();
+    } else if (rows[0].isVerified) {
+      throw new UserVerifiedError();
+    } else {
+      const result = await sql`UPDATE users set ${sql({ isVerified: true })} WHERE ${sql({ id })}`;
+      if (result.count === 0) {
+        throw new UserNotExistsError();
+      }
     }
   }
 }
