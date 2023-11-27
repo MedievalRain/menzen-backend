@@ -8,6 +8,6 @@ export const sendVerificationEmail = async (id: string, email: string) => {
     from: "subs.medievalrain.net <subs@email.medievalrain.net>",
     to: [email],
     subject: "Verification",
-    html: `<a href="${FRONTEND_DOMAIN}/verify/${id}">Verify email</a>`,
+    html: `<a href="${FRONTEND_DOMAIN}/verify?id=${id}">Verify email</a>`,
   });
 };
