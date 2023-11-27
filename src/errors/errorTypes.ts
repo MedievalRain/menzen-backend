@@ -1,0 +1,1 @@
+export type ErrorTypes = "JWT" | "WRONG_PASSWORD" | "BAD_INPUT" | "USER_EXISTS" | "USER_NOT_EXISTS" | "USER_NOT_ACTIVE";
