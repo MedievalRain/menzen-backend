@@ -37,3 +37,5 @@ userRouter.post("/login", async (req, res, next) => {
     next(error);
   }
 });
+
+export { userRouter };

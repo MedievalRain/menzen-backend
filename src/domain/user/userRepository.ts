@@ -24,13 +24,13 @@ export class UserRepository {
   }
 
   public async verifyEmail(id: string) {
-    const rows = await sql<IsVerifiedResponse[]>`SELECT isVerified FROM users WHERE ${sql({ id })}`;
+    const rows = await sql<IsVerifiedResponse[]>`SELECT isVerified FROM users WHERE id=${id}`;
     if (rows.length === 0) {
       throw new UserNotExistsError();
     } else if (rows[0].isVerified) {
       throw new UserVerifiedError();
     } else {
-      const result = await sql`UPDATE users set ${sql({ isVerified: true })} WHERE ${sql({ id })}`;
+      const result = await sql`UPDATE users set ${sql({ isVerified: true })} WHERE id=${id}`;
       if (result.count === 0) {
         throw new UserNotExistsError();
       }
@@ -38,7 +38,7 @@ export class UserRepository {
   }
 
   public async getUserCredentials(email: string) {
-    const rows = await sql<UserCredentialsResponse[]>`SELECT id,passwordHash FROM users where ${sql({ email })}`;
+    const rows = await sql<UserCredentialsResponse[]>`SELECT id,passwordHash FROM users WHERE email=${email}`;
     if (rows.length === 0) {
       throw new UserNotExistsError();
     }
