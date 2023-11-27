@@ -30,6 +30,6 @@ export class TableRepository {
   }
 
   public async getTables(userId: string): Promise<Table[]> {
-    return sql<Table[]>`SELECT id,name,created_at FROM tables WHERE user_id=${userId}`;
+    return sql<Table[]>`SELECT id,name FROM tables WHERE user_id=${userId} ORDER BY created_at DESC`;
   }
 }
