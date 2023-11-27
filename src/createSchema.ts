@@ -6,7 +6,8 @@ async function createTables() {
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) NOT NULL UNIQUE,
     passwordHash TEXT NOT NULL,
-    isVerified BOOLEAN NOT NULL
+    isVerified BOOLEAN NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW()
     );`;
   await sql`CREATE TABLE tables (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -24,6 +25,7 @@ async function createTables() {
   await sql`CREATE TABLE rows (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     tableId UUID NOT NULL,
+    createdAt TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (tableId) REFERENCES tables(id)
     );`;
   await sql`CREATE TABLE rows_values (
