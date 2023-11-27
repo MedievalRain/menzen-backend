@@ -2,7 +2,7 @@ import { sql } from "../../config/database/connection";
 import { UserExistsError } from "../../errors/UserExistsError";
 import { UserNotExistsError } from "../../errors/UserNotExistsError";
 import { UserVerifiedError } from "../../errors/UserVerifiedError";
-import { IdResponse, IsVerifiedResponse } from "./userTypes";
+import { IdResponse, IsVerifiedResponse, UserCredentialsResponse } from "./userTypes";
 
 export class UserRepository {
   public async createUser(email: string, passwordHash: string): Promise<string> {
@@ -35,5 +35,13 @@ export class UserRepository {
         throw new UserNotExistsError();
       }
     }
+  }
+
+  public async getUserCredentials(email: string) {
+    const rows = await sql<UserCredentialsResponse[]>`SELECT id,passwordHash FROM users where ${sql({ email })}`;
+    if (rows.length === 0) {
+      throw new UserNotExistsError();
+    }
+    return rows[0];
   }
 }
