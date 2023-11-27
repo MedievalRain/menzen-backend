@@ -20,6 +20,5 @@ module.exports = {
     quotes: ["error", "double"],
     "no-template-curly-in-string": "error",
     camelcase: "error",
-    "@typescript-eslint/no-explicit-any": "warn",
   },
 };
