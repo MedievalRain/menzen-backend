@@ -5,7 +5,7 @@ import { tableService } from "../../domain/tables/tableService";
 const tableRouter = express.Router();
 tableRouter.use(authMiddleware);
 
-tableRouter.put("/new", async (req, res, next) => {
+tableRouter.post("/new", async (req, res, next) => {
   try {
     await tableService.createTable(req.body, res.locals.userId);
     res.status(200).json({ message: "Table created" });
