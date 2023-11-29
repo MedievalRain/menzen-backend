@@ -8,4 +8,5 @@ export type ErrorTypes =
   | "USER_VERIFIED"
   | "USER_NOT_VERIFIED"
   | "INVALID_JWT"
-  | "TABLE_NOT_EXISTS";
+  | "TABLE_NOT_EXISTS"
+  | "COLUMN_EXISTS";
