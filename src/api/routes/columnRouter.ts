@@ -14,4 +14,13 @@ columnRouter.post("/new", async (req, res, next) => {
   }
 });
 
+columnRouter.get("/", async (req, res, next) => {
+  try {
+    const columns = await columnService.getColumns(req.query, res.locals.userId);
+    res.status(200).json(columns);
+  } catch (error) {
+    next(error);
+  }
+});
+
 export { columnRouter };

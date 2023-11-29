@@ -1,6 +1,7 @@
 import { sql } from "../../config/database/connection";
 import { TableNotExistsError } from "../../errors/TableNotExistsError";
 import { ColumnExistsError } from "../../errors/ColumnExistsError";
+import { Column } from "./columnTypes";
 
 export class ColumnRepository {
   public async createColumn(name: string, tableId: string, userId: string) {
@@ -19,6 +20,21 @@ export class ColumnRepository {
         }
       }
       throw error;
+    }
+  }
+  private async isUserOwnsTable(tableId: string, userId: string) {
+    const result = await sql`
+    SELECT 1
+    FROM tables
+    WHERE id = ${tableId} AND user_id = ${userId}`;
+    return result.count === 1;
+  }
+
+  public async getColumns(tableId: string, userId: string): Promise<Column[]> {
+    if (await this.isUserOwnsTable(tableId, userId)) {
+      return await sql<Column[]>`SELECT id,name FROM columns WHERE table_id=${tableId}`;
+    } else {
+      throw new TableNotExistsError();
     }
   }
 }

@@ -13,3 +13,14 @@ export const parseNewColumnInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+const getColumnsSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export const parseGetColumnsInput = (data: unknown) => {
+  try {
+    return getColumnsSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};
