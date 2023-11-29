@@ -20,7 +20,7 @@ async function createTables() {
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         name VARCHAR(255) NOT NULL,
         table_id UUID NOT NULL,
-        data_type TEXT NOT NULL,
+        UNIQUE (name,table_id),
         FOREIGN KEY (table_id) REFERENCES tables(id) ON DELETE CASCADE
     );`;
   await sql`CREATE TABLE rows (
