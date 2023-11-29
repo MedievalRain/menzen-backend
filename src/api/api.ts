@@ -5,6 +5,7 @@ import cors from "cors";
 import { errorMiddleware } from "../middleware/error";
 import { userRouter } from "./routes/userRouter";
 import { tableRouter } from "./routes/tableRouter";
+import { columnRouter } from "./routes/columnRouter";
 
 const apiRouter = express.Router();
 apiRouter.use(cookieParser());
@@ -14,6 +15,7 @@ apiRouter.use(express.urlencoded({ extended: true }));
 
 apiRouter.use("/user", userRouter);
 apiRouter.use("/table", tableRouter);
+apiRouter.use("/column", columnRouter);
 apiRouter.use(errorMiddleware);
 
 export { apiRouter };
