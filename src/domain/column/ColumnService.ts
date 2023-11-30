@@ -1,5 +1,11 @@
 import { ColumnRepository } from "./ColumnRepository";
-import { parseDeleteColumnInput, parseGetColumnsInput, parseNewColumnInput, parseRenameColumnInput } from "./columnValidation";
+import {
+  parseChangeColumnStatusInput,
+  parseDeleteColumnInput,
+  parseGetColumnsInput,
+  parseNewColumnInput,
+  parseRenameColumnInput,
+} from "./columnValidation";
 
 class ColumnService {
   constructor(private columnRepository: ColumnRepository) {}
@@ -21,6 +27,10 @@ class ColumnService {
   public async renameColumn(data: unknown, userId: string) {
     const { name, columnId, collectionId } = parseRenameColumnInput(data);
     return this.columnRepository.renameColumn(name, columnId, collectionId, userId);
+  }
+  public async changeColumnStatus(data: unknown, userId: string) {
+    const { enabled, columnId, collectionId } = parseChangeColumnStatusInput(data);
+    return this.columnRepository.changeColumnStatus(enabled, columnId, collectionId, userId);
   }
 }
 

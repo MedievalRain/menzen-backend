@@ -54,4 +54,15 @@ export class ColumnRepository {
       throw new TableNotExistsError();
     }
   }
+
+  public async changeColumnStatus(enabled: boolean, columnId: string, collectionId: string, userId: string) {
+    if (await this.isUserOwnsCollection(collectionId, userId)) {
+      const result = await sql<
+        Column[]
+      >`UPDATE columns SET enabled=${enabled} WHERE id=${columnId} AND table_id=${collectionId}`;
+      if (result.count === 0) throw new ColumnNotExistError();
+    } else {
+      throw new TableNotExistsError();
+    }
+  }
 }

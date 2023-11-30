@@ -39,5 +39,13 @@ columnRouter.post("/", async (req, res, next) => {
     next(error);
   }
 });
+columnRouter.post("/status", async (req, res, next) => {
+  try {
+    await columnService.changeColumnStatus(req.body, res.locals.userId);
+    res.status(200).json({ message: "Column status changed" });
+  } catch (error) {
+    next(error);
+  }
+});
 
 export { columnRouter };

@@ -50,3 +50,16 @@ export const parseRenameColumnInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+const changeColumnStatusSchema = z.object({
+  collectionId: z.string().uuid(),
+  columnId: z.string().uuid(),
+  enabled: z.boolean(),
+});
+
+export const parseChangeColumnStatusInput = (data: unknown) => {
+  try {
+    return changeColumnStatusSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};
