@@ -31,7 +31,7 @@ columnRouter.delete("/", async (req, res, next) => {
   }
 });
 
-columnRouter.post("/", async (req, res, next) => {
+columnRouter.post("/name", async (req, res, next) => {
   try {
     await columnService.renameColumn(req.body, res.locals.userId);
     res.status(200).json({ message: "Column renamed" });
