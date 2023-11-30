@@ -10,4 +10,5 @@ export type ErrorTypes =
   | "INVALID_JWT"
   | "TABLE_NOT_EXISTS"
   | "COLUMN_EXISTS"
-  | "COLUMN_NOT_EXIST";
+  | "COLUMN_NOT_EXIST"
+  | "ORDERING_ERROR";
