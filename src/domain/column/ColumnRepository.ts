@@ -33,7 +33,7 @@ export class ColumnRepository {
 
   public async getColumns(collectionId: string, userId: string): Promise<Column[]> {
     if (await this.isUserOwnsCollection(collectionId, userId)) {
-      return await sql<Column[]>`SELECT id,name FROM columns WHERE table_id=${collectionId}`;
+      return await sql<Column[]>`SELECT id,name,ordering,enabled FROM columns WHERE table_id=${collectionId}`;
     } else {
       throw new TableNotExistsError();
     }
