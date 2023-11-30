@@ -5,13 +5,13 @@ import { Column } from "./columnTypes";
 import { ColumnNotExistError } from "../../errors/ColumnNotExistError";
 
 export class ColumnRepository {
-  public async createColumn(name: string, tableId: string, userId: string) {
+  public async createColumn(name: string, collectionId: string, userId: string) {
     try {
       const result = await sql`INSERT INTO columns (name, table_id)
-        SELECT ${name}, ${tableId}
+        SELECT ${name}, ${collectionId}
         WHERE EXISTS (
         SELECT 1 FROM tables
-        WHERE id = ${tableId} AND user_id = ${userId}
+        WHERE id = ${collectionId} AND user_id = ${userId}
       );`;
       if (result.count === 0) throw new TableNotExistsError();
     } catch (error) {
@@ -23,7 +23,7 @@ export class ColumnRepository {
       throw error;
     }
   }
-  private async isUserOwnsTable(tableId: string, userId: string) {
+  private async isUserOwnsCollection(tableId: string, userId: string) {
     const result = await sql`
     SELECT 1
     FROM tables
@@ -31,24 +31,24 @@ export class ColumnRepository {
     return result.count === 1;
   }
 
-  public async getColumns(tableId: string, userId: string): Promise<Column[]> {
-    if (await this.isUserOwnsTable(tableId, userId)) {
-      return await sql<Column[]>`SELECT id,name FROM columns WHERE table_id=${tableId}`;
+  public async getColumns(collectionId: string, userId: string): Promise<Column[]> {
+    if (await this.isUserOwnsCollection(collectionId, userId)) {
+      return await sql<Column[]>`SELECT id,name FROM columns WHERE table_id=${collectionId}`;
     } else {
       throw new TableNotExistsError();
     }
   }
-  public async deleteColumn(columnId: string, tableId: string, userId: string) {
-    if (await this.isUserOwnsTable(tableId, userId)) {
-      const result = await sql<Column[]>`DELETE FROM columns WHERE id=${columnId} AND tableId=${tableId}`;
+  public async deleteColumn(columnId: string, collectionId: string, userId: string) {
+    if (await this.isUserOwnsCollection(collectionId, userId)) {
+      const result = await sql<Column[]>`DELETE FROM columns WHERE id=${columnId} AND tableId=${collectionId}`;
       if (result.count === 0) throw new ColumnNotExistError();
     } else {
       throw new TableNotExistsError();
     }
   }
-  public async renameColumn(name: string, columnId: string, tableId: string, userId: string) {
-    if (await this.isUserOwnsTable(tableId, userId)) {
-      const result = await sql<Column[]>`UPDATE columns SET name=${name} WHERE id=${columnId} AND tableId=${tableId}`;
+  public async renameColumn(name: string, columnId: string, collectionId: string, userId: string) {
+    if (await this.isUserOwnsCollection(collectionId, userId)) {
+      const result = await sql<Column[]>`UPDATE columns SET name=${name} WHERE id=${columnId} AND tableId=${collectionId}`;
       if (result.count === 0) throw new ColumnNotExistError();
     } else {
       throw new TableNotExistsError();

@@ -26,7 +26,7 @@ export const parseGetColumnsInput = (data: unknown) => {
 };
 
 const deleteColumnSchema = z.object({
-  tableId: z.string().uuid(),
+  collectionId: z.string().uuid(),
   columnId: z.string().uuid(),
 });
 
@@ -38,7 +38,7 @@ export const parseDeleteColumnInput = (data: unknown) => {
   }
 };
 const renameColumnSchema = z.object({
-  tableId: z.string().uuid(),
+  collectionId: z.string().uuid(),
   columnId: z.string().uuid(),
   name: z.string().min(1).max(256),
 });
