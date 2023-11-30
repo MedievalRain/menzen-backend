@@ -7,12 +7,12 @@ import { ColumnNotExistError } from "../../errors/ColumnNotExistError";
 export class ColumnRepository {
   public async createColumn(name: string, collectionId: string, userId: string) {
     try {
-      const result = await sql`INSERT INTO columns (name, table_id)
-        SELECT ${name}, ${collectionId}
-        WHERE EXISTS (
-        SELECT 1 FROM tables
-        WHERE id = ${collectionId} AND user_id = ${userId}
-      );`;
+      const result = await sql`INSERT INTO columns (name, table_id,ordering)
+      SELECT ${name}, ${collectionId},COALESCE((SELECT MAX(ordering) + 1 FROM columns WHERE table_id = ${collectionId}), 0)
+      WHERE EXISTS (
+      SELECT 1 FROM tables
+      WHERE id = ${collectionId} AND user_id = ${userId}
+    );`;
       if (result.count === 0) throw new TableNotExistsError();
     } catch (error) {
       if (error instanceof sql.PostgresError) {
