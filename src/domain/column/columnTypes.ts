@@ -4,3 +4,9 @@ export interface Column {
   ordering: number;
   enabled: boolean;
 }
+
+export interface ColumnIdData {
+  id: string;
+}
+
+export type OrderDirection = "up" | "down";

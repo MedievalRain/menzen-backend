@@ -48,4 +48,13 @@ columnRouter.post("/status", async (req, res, next) => {
   }
 });
 
+columnRouter.post("/order", async (req, res, next) => {
+  try {
+    await columnService.changeColumnOrder(req.body, res.locals.userId);
+    res.status(200).json({ message: "Column order changed" });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export { columnRouter };

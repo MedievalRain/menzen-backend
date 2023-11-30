@@ -1,5 +1,6 @@
 import { ColumnRepository } from "./ColumnRepository";
 import {
+  parseChangeColumnOrderInput,
   parseChangeColumnStatusInput,
   parseDeleteColumnInput,
   parseGetColumnsInput,
@@ -31,6 +32,11 @@ class ColumnService {
   public async changeColumnStatus(data: unknown, userId: string) {
     const { enabled, columnId, collectionId } = parseChangeColumnStatusInput(data);
     return this.columnRepository.changeColumnStatus(enabled, columnId, collectionId, userId);
+  }
+
+  public async changeColumnOrder(data: unknown, userId: string) {
+    const { direction, columnId, collectionId } = parseChangeColumnOrderInput(data);
+    return this.columnRepository.changeColumnOrder(direction, columnId, collectionId, userId);
   }
 }
 

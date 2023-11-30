@@ -63,3 +63,17 @@ export const parseChangeColumnStatusInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+
+const changeColumnOrderSchema = z.object({
+  collectionId: z.string().uuid(),
+  columnId: z.string().uuid(),
+  direction: z.enum(["up", "down"]),
+});
+
+export const parseChangeColumnOrderInput = (data: unknown) => {
+  try {
+    return changeColumnOrderSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};
