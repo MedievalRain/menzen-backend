@@ -40,7 +40,7 @@ export class ColumnRepository {
   }
   public async deleteColumn(columnId: string, collectionId: string, userId: string) {
     if (await this.isUserOwnsCollection(collectionId, userId)) {
-      const result = await sql<Column[]>`DELETE FROM columns WHERE id=${columnId} AND tableId=${collectionId}`;
+      const result = await sql<Column[]>`DELETE FROM columns WHERE id=${columnId} AND table_id=${collectionId}`;
       if (result.count === 0) throw new ColumnNotExistError();
     } else {
       throw new TableNotExistsError();
@@ -48,7 +48,7 @@ export class ColumnRepository {
   }
   public async renameColumn(name: string, columnId: string, collectionId: string, userId: string) {
     if (await this.isUserOwnsCollection(collectionId, userId)) {
-      const result = await sql<Column[]>`UPDATE columns SET name=${name} WHERE id=${columnId} AND tableId=${collectionId}`;
+      const result = await sql<Column[]>`UPDATE columns SET name=${name} WHERE id=${columnId} AND table_id=${collectionId}`;
       if (result.count === 0) throw new ColumnNotExistError();
     } else {
       throw new TableNotExistsError();
