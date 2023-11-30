@@ -37,3 +37,16 @@ export const parseDeleteColumnInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+const renameColumnSchema = z.object({
+  tableId: z.string().uuid(),
+  columnId: z.string().uuid(),
+  name: z.string().min(1).max(256),
+});
+
+export const parseRenameColumnInput = (data: unknown) => {
+  try {
+    return renameColumnSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};

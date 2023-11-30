@@ -46,4 +46,12 @@ export class ColumnRepository {
       throw new TableNotExistsError();
     }
   }
+  public async renameColumn(name: string, columnId: string, tableId: string, userId: string) {
+    if (await this.isUserOwnsTable(tableId, userId)) {
+      const result = await sql<Column[]>`UPDATE columns SET name=${name} WHERE id=${columnId} AND tableId=${tableId}`;
+      if (result.count === 0) throw new ColumnNotExistError();
+    } else {
+      throw new TableNotExistsError();
+    }
+  }
 }
