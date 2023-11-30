@@ -2,6 +2,7 @@ import { sql } from "../../config/database/connection";
 import { TableNotExistsError } from "../../errors/TableNotExistsError";
 import { ColumnExistsError } from "../../errors/ColumnExistsError";
 import { Column } from "./columnTypes";
+import { ColumnNotExistError } from "../../errors/ColumnNotExistError";
 
 export class ColumnRepository {
   public async createColumn(name: string, tableId: string, userId: string) {
@@ -33,6 +34,14 @@ export class ColumnRepository {
   public async getColumns(tableId: string, userId: string): Promise<Column[]> {
     if (await this.isUserOwnsTable(tableId, userId)) {
       return await sql<Column[]>`SELECT id,name FROM columns WHERE table_id=${tableId}`;
+    } else {
+      throw new TableNotExistsError();
+    }
+  }
+  public async deleteColumn(columnId: string, tableId: string, userId: string) {
+    if (await this.isUserOwnsTable(tableId, userId)) {
+      const result = await sql<Column[]>`DELETE FROM columns WHERE id=${columnId} AND tableId=${tableId}`;
+      if (result.count === 0) throw new ColumnNotExistError();
     } else {
       throw new TableNotExistsError();
     }

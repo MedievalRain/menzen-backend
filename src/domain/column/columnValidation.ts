@@ -24,3 +24,16 @@ export const parseGetColumnsInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+
+const deleteColumnSchema = z.object({
+  tableId: z.string().uuid(),
+  columnId: z.string().uuid(),
+});
+
+export const parseDeleteColumnInput = (data: unknown) => {
+  try {
+    return deleteColumnSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};

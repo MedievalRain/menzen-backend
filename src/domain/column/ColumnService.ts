@@ -1,5 +1,5 @@
 import { ColumnRepository } from "./ColumnRepository";
-import { parseGetColumnsInput, parseNewColumnInput } from "./columnValidation";
+import { parseDeleteColumnInput, parseGetColumnsInput, parseNewColumnInput } from "./columnValidation";
 
 class ColumnService {
   constructor(private columnRepository: ColumnRepository) {}
@@ -11,6 +11,11 @@ class ColumnService {
   public async getColumns(data: unknown, userId: string) {
     const { id: tableId } = parseGetColumnsInput(data);
     return this.columnRepository.getColumns(tableId, userId);
+  }
+
+  public async deleteColumn(data: unknown, userId: string) {
+    const { columnId, tableId } = parseDeleteColumnInput(data);
+    return this.columnRepository.deleteColumn(columnId, tableId, userId);
   }
 }
 

@@ -22,5 +22,13 @@ columnRouter.get("/", async (req, res, next) => {
     next(error);
   }
 });
+columnRouter.delete("/", async (req, res, next) => {
+  try {
+    await columnService.deleteColumn(req.query, res.locals.userId);
+    res.status(200).json({ message: "Column deleted" });
+  } catch (error) {
+    next(error);
+  }
+});
 
 export { columnRouter };
