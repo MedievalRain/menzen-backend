@@ -4,7 +4,7 @@ import { corsOptions } from "../config/cors";
 import cors from "cors";
 import { errorMiddleware } from "../middleware/error";
 import { userRouter } from "./routes/userRouter";
-import { tableRouter } from "./routes/tableRouter";
+import { collectionRouter } from "./routes/collectionRouter";
 import { columnRouter } from "./routes/columnRouter";
 
 const apiRouter = express.Router();
@@ -14,7 +14,7 @@ apiRouter.use(express.json());
 apiRouter.use(express.urlencoded({ extended: true }));
 
 apiRouter.use("/user", userRouter);
-apiRouter.use("/table", tableRouter);
+apiRouter.use("/collection", collectionRouter);
 apiRouter.use("/column", columnRouter);
 apiRouter.use(errorMiddleware);
 

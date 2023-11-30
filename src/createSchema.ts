@@ -2,36 +2,36 @@ import { sql } from "./config/database/connection";
 
 async function createTables() {
   await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`;
-  await sql`CREATE TABLE users (
+  await sql`CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     is_verified BOOLEAN NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
     );`;
-  await sql`CREATE TABLE tables (
+  await sql`CREATE TABLE IF NOT EXISTS collections (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         name VARCHAR(255) NOT NULL,
         user_id UUID NOT NULL,
         created_at TIMESTAMP DEFAULT NOW(),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );`;
-  await sql`CREATE TABLE columns (
+  await sql`CREATE TABLE IF NOT EXISTS columns (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         name VARCHAR(255) NOT NULL,
-        table_id UUID NOT NULL,
+        collection_id UUID NOT NULL,
         ordering INTEGER NOT NULL,
         enabled BOOLEAN NOT NULL DEFAULT true,
-        UNIQUE (name,table_id),
-        FOREIGN KEY (table_id) REFERENCES tables(id) ON DELETE CASCADE
+        UNIQUE (name,collection_id),
+        FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
     );`;
-  await sql`CREATE TABLE rows (
+  await sql`CREATE TABLE IF NOT EXISTS rows (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    table_id UUID NOT NULL,
+    collection_id UUID NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    FOREIGN KEY (table_id) REFERENCES tables(id) ON DELETE CASCADE
+    FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
     );`;
-  await sql`CREATE TABLE rows_values (
+  await sql`CREATE TABLE IF NOT EXISTS rows_values (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         value TEXT NOT NULL,
         row_id UUID NOT NULL,
