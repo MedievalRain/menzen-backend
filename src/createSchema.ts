@@ -25,18 +25,18 @@ async function createTables() {
         UNIQUE (name,collection_id),
         FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
     );`;
-  await sql`CREATE TABLE IF NOT EXISTS rows (
+  await sql`CREATE TABLE IF NOT EXISTS coins (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     collection_id UUID NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
     );`;
-  await sql`CREATE TABLE IF NOT EXISTS rows_values (
+  await sql`CREATE TABLE IF NOT EXISTS coins_values (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         value TEXT NOT NULL,
-        row_id UUID NOT NULL,
+        coin_id UUID NOT NULL,
         column_id UUID NOT NULL,
-        FOREIGN KEY (row_id) REFERENCES rows(id) ON DELETE CASCADE,
+        FOREIGN KEY (coin_id) REFERENCES coins(id) ON DELETE CASCADE,
         FOREIGN KEY (column_id) REFERENCES columns(id) ON DELETE CASCADE
     );`;
 }

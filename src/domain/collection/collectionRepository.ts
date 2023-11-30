@@ -34,11 +34,11 @@ export class CollectionRepository {
         SELECT 
             t.id,
             t.name,
-            COUNT(r.id) AS count
+            COUNT(c.id) AS count
         FROM 
             collections t
         LEFT JOIN 
-            rows r ON t.id = r.collection_id
+            coins c ON t.id = c.collection_id
         WHERE 
             t.user_id = ${userId}
         GROUP BY 
