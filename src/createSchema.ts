@@ -23,7 +23,6 @@ async function createTables() {
         ordering INTEGER NOT NULL,
         enabled BOOLEAN NOT NULL DEFAULT true,
         UNIQUE (name,table_id),
-        UNIQUE (ordering,table_id),
         FOREIGN KEY (table_id) REFERENCES tables(id) ON DELETE CASCADE
     );`;
   await sql`CREATE TABLE rows (
