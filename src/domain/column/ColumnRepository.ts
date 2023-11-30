@@ -4,6 +4,7 @@ import { ColumnExistsError } from "../../errors/ColumnExistsError";
 import { Column, OrderDirection } from "./columnTypes";
 import { ColumnNotExistError } from "../../errors/ColumnNotExistError";
 import { OrderingError } from "../../errors/OrderingError";
+import { isUserOwnsCollection } from "../shared/database";
 
 export class ColumnRepository {
   public async createColumn(name: string, collectionId: string, userId: string) {
@@ -24,23 +25,16 @@ export class ColumnRepository {
       throw error;
     }
   }
-  private async isUserOwnsCollection(collectionId: string, userId: string) {
-    const result = await sql`
-    SELECT 1
-    FROM collections
-    WHERE id = ${collectionId} AND user_id = ${userId}`;
-    return result.count === 1;
-  }
 
   public async getColumns(collectionId: string, userId: string): Promise<Column[]> {
-    if (await this.isUserOwnsCollection(collectionId, userId)) {
+    if (await isUserOwnsCollection(collectionId, userId)) {
       return await sql<Column[]>`SELECT id,name,ordering,enabled FROM columns WHERE collection_id=${collectionId}`;
     } else {
       throw new CollectionNotExistsError();
     }
   }
   public async deleteColumn(columnId: string, collectionId: string, userId: string) {
-    if (await this.isUserOwnsCollection(collectionId, userId)) {
+    if (await isUserOwnsCollection(collectionId, userId)) {
       const result = await sql<Column[]>`DELETE FROM columns WHERE id=${columnId} AND collection_id=${collectionId}`;
       if (result.count === 0) throw new ColumnNotExistError();
     } else {
@@ -48,7 +42,7 @@ export class ColumnRepository {
     }
   }
   public async renameColumn(name: string, columnId: string, collectionId: string, userId: string) {
-    if (await this.isUserOwnsCollection(collectionId, userId)) {
+    if (await isUserOwnsCollection(collectionId, userId)) {
       const result = await sql<
         Column[]
       >`UPDATE columns SET name=${name} WHERE id=${columnId} AND collection_id=${collectionId}`;
@@ -59,7 +53,7 @@ export class ColumnRepository {
   }
 
   public async changeColumnStatus(enabled: boolean, columnId: string, collectionId: string, userId: string) {
-    if (await this.isUserOwnsCollection(collectionId, userId)) {
+    if (await isUserOwnsCollection(collectionId, userId)) {
       const result = await sql<
         Column[]
       >`UPDATE columns SET enabled=${enabled} WHERE id=${columnId} AND collection_id=${collectionId}`;
@@ -78,7 +72,7 @@ export class ColumnRepository {
   }
 
   public async changeColumnOrder(direction: OrderDirection, columnId: string, collectionId: string, userId: string) {
-    if (!(await this.isUserOwnsCollection(collectionId, userId))) throw new CollectionNotExistsError();
+    if (!(await isUserOwnsCollection(collectionId, userId))) throw new CollectionNotExistsError();
     if (!(await this.collectionHasColumn(columnId, collectionId))) throw new ColumnNotExistError();
 
     await sql.begin(async (sql) => {
