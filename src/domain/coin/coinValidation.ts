@@ -18,3 +18,15 @@ export const parseCreateCoinInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+
+const getCoinsSchema = z.object({
+  collectionId: z.string().uuid(),
+});
+
+export const parseGetCoinsInput = (data: unknown) => {
+  try {
+    return getCoinsSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};
