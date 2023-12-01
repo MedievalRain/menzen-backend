@@ -2,7 +2,8 @@ import { randomUUID } from "crypto";
 import { sql } from "../../config/database/connection";
 import { CollectionNotExistsError } from "../../errors/CollectionNotExistsError";
 import { isUserOwnsCollection } from "../shared/database";
-import { Coin, CoinValue, GetCoinsQuery } from "./coinTypes";
+import { Coin, CoinValue, GetCoinQuery, GetCoinsQuery } from "./coinTypes";
+import { CoinNotExistsError } from "../../errors/CoinExistsError";
 
 export class CoinRepository {
   public async createCoin(values: CoinValue[], collectionId: string, userId: string): Promise<string> {
@@ -42,5 +43,33 @@ export class CoinRepository {
       });
       return { id: row.id, createdAt: row.createdAt, values };
     });
+  }
+
+  private async isUserOwnsCoin(coinId: string, userId: string) {
+    const result = await sql`
+    SELECT 1
+    FROM coins
+    JOIN collections ON coins.collection_id=collections.id
+    WHERE coins.id = ${coinId} AND collections.user_id = ${userId}`;
+    return result.count === 1;
+  }
+
+  public async getCoin(coinId: string, userId: string): Promise<Coin> {
+    if (!(await this.isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
+    const rows = await sql<GetCoinQuery[]>`
+    SELECT c.created_at,cv.column_id,cv.value
+    FROM coins c
+    INNER JOIN coins_values cv ON c.id = cv.coin_id
+    WHERE c.id = ${coinId}`;
+    if (rows.count === 0) throw new CoinNotExistsError();
+    const values: CoinValue[] = rows.map((row) => {
+      return { columnId: row.columnId, value: row.value };
+    });
+    const { id, createdAt } = rows[0];
+    return {
+      id,
+      createdAt,
+      values,
+    };
   }
 }

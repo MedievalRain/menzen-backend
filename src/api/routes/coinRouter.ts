@@ -21,5 +21,12 @@ coinRouter.get("/collection", async (req, res, next) => {
     next(error);
   }
 });
-
+coinRouter.get("/", async (req, res, next) => {
+  try {
+    const coin = await coinService.getCoin(req.query, res.locals.userId);
+    res.status(200).json(coin);
+  } catch (error) {
+    next(error);
+  }
+});
 export { coinRouter };

@@ -15,3 +15,10 @@ export interface GetCoinsQuery {
   columnIds: string[];
   values: string[];
 }
+
+export interface GetCoinQuery {
+  id: string;
+  createdAt: Date;
+  columnId: string;
+  value: string;
+}

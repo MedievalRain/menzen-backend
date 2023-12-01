@@ -30,3 +30,15 @@ export const parseGetCoinsInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+
+const getCoinSchema = z.object({
+  coinId: z.string().uuid(),
+});
+
+export const parseGetCoinInput = (data: unknown) => {
+  try {
+    return getCoinSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};
