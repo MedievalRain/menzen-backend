@@ -37,7 +37,8 @@ async function createTables() {
         coin_id UUID NOT NULL,
         column_id UUID NOT NULL,
         FOREIGN KEY (coin_id) REFERENCES coins(id) ON DELETE CASCADE,
-        FOREIGN KEY (column_id) REFERENCES columns(id) ON DELETE CASCADE
+        FOREIGN KEY (column_id) REFERENCES columns(id) ON DELETE CASCADE,
+        UNIQUE (coin_id,column_id)
     );`;
 }
 createTables().then(() => {
