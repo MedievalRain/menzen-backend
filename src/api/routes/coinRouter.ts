@@ -13,7 +13,7 @@ coinRouter.post("/new", async (req, res, next) => {
   }
 });
 
-coinRouter.get("/", async (req, res, next) => {
+coinRouter.get("/collection", async (req, res, next) => {
   try {
     const coins = await coinService.getCoins(req.query, res.locals.userId);
     res.status(200).json(coins);
