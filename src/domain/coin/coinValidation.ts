@@ -3,7 +3,7 @@ import { ValidationError } from "../../errors/ValidationError";
 
 const coinValueSchema = z.object({
   columnId: z.string().uuid(),
-  value: z.string().min(1),
+  value: z.string(),
 });
 
 const createCoinSchema = z.object({
@@ -38,6 +38,19 @@ const getCoinSchema = z.object({
 export const parseGetCoinInput = (data: unknown) => {
   try {
     return getCoinSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};
+
+const editCoinValuesSchema = z.object({
+  coinId: z.string().uuid(),
+  values: z.array(coinValueSchema),
+});
+
+export const parseEditCoinValuesInput = (data: unknown) => {
+  try {
+    return editCoinValuesSchema.parse(data);
   } catch {
     throw new ValidationError();
   }

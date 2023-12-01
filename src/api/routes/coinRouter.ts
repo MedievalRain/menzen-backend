@@ -29,4 +29,13 @@ coinRouter.get("/", async (req, res, next) => {
     next(error);
   }
 });
+
+coinRouter.post("/", async (req, res, next) => {
+  try {
+    await coinService.editCoinValues(req.body, res.locals.userId);
+    res.status(200).json({ message: "Coin values edited" });
+  } catch (error) {
+    next(error);
+  }
+});
 export { coinRouter };

@@ -4,6 +4,7 @@ import { CollectionNotExistsError } from "../../errors/CollectionNotExistsError"
 import { isUserOwnsCollection } from "../shared/database";
 import { Coin, CoinValue, GetCoinQuery, GetCoinsQuery } from "./coinTypes";
 import { CoinNotExistsError } from "../../errors/CoinExistsError";
+import { ColumnNotExistError } from "../../errors/ColumnNotExistError";
 
 export class CoinRepository {
   public async createCoin(values: CoinValue[], collectionId: string, userId: string): Promise<string> {
@@ -71,5 +72,27 @@ export class CoinRepository {
       createdAt,
       values,
     };
+  }
+
+  public async editCoinValues(values: CoinValue[], coinId: string, userId: string) {
+    if (!(await this.isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
+    try {
+      await sql.begin((sql) =>
+        values.map(
+          (value) => sql`
+        INSERT INTO coins_values ${sql({ ...value, coinId })} 
+        ON CONFLICT(coin_id,column_id) DO UPDATE
+        SET value=${value.value}
+        `,
+        ),
+      );
+    } catch (error) {
+      if (error instanceof sql.PostgresError) {
+        if (error.code === "23503") {
+          throw new ColumnNotExistError();
+        }
+      }
+      throw error;
+    }
   }
 }
