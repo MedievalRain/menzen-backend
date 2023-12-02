@@ -7,6 +7,7 @@ export interface Coin {
   id: string;
   createdAt: Date;
   values: CoinValue[];
+  imageIds: string[];
 }
 
 export interface GetCoinsQuery {
@@ -14,6 +15,7 @@ export interface GetCoinsQuery {
   createdAt: Date;
   columnIds: string[];
   values: string[];
+  images: string[];
 }
 
 export interface GetCoinQuery {
@@ -21,4 +23,5 @@ export interface GetCoinQuery {
   createdAt: Date;
   columnId: string;
   value: string;
+  images: string[];
 }

@@ -30,11 +30,16 @@ export class CoinRepository {
   }
   public async getCoins(collectionId: string, userId: string): Promise<Coin[]> {
     if (!(await isUserOwnsCollection(collectionId, userId))) throw new CollectionNotExistsError();
-    const rows = await sql<
-      GetCoinsQuery[]
-    >`SELECT c.id,array_agg(cv.column_id) AS column_ids,array_agg(cv.value) AS values,c.created_at
+    const rows = await sql<GetCoinsQuery[]>`
+    SELECT 
+    c.id,
+    array_agg(cv.column_id) AS column_ids,
+    array_agg(cv.value) AS values,
+    c.created_at,
+    array_agg(DISTINCT ci.id) FILTER (WHERE ci.id IS NOT NULL) AS images
     FROM coins c
     INNER JOIN coins_values cv ON c.id = cv.coin_id
+    LEFT JOIN coin_images ci ON c.id = ci.coin_id
     WHERE c.collection_id = ${collectionId} 
     GROUP BY c.id
     ORDER BY c.created_at ASC`;
@@ -42,26 +47,30 @@ export class CoinRepository {
       const values: CoinValue[] = row.columnIds.map((columnId, index) => {
         return { columnId, value: row.values[index] };
       });
-      return { id: row.id, createdAt: row.createdAt, values };
+
+      return { id: row.id, createdAt: row.createdAt, values, imageIds: row.images || [] };
     });
   }
 
   public async getCoin(coinId: string, userId: string): Promise<Coin> {
     if (!(await isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
     const rows = await sql<GetCoinQuery[]>`
-    SELECT c.created_at,cv.column_id,cv.value
+    SELECT c.created_at,cv.column_id,cv.value,  array_agg(ci.id) FILTER (WHERE ci.id IS NOT NULL) AS images
     FROM coins c
     INNER JOIN coins_values cv ON c.id = cv.coin_id
-    WHERE c.id = ${coinId}`;
+    LEFT JOIN coin_images ci ON c.id = ci.coin_id
+    WHERE c.id = ${coinId}
+    GROUP BY c.created_at, cv.column_id, cv.value`;
     if (rows.count === 0) throw new CoinNotExistsError();
     const values: CoinValue[] = rows.map((row) => {
       return { columnId: row.columnId, value: row.value };
     });
-    const { id, createdAt } = rows[0];
+    const { id, createdAt, images } = rows[0];
     return {
       id,
       createdAt,
       values,
+      imageIds: images,
     };
   }
 
