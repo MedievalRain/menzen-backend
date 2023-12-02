@@ -20,20 +20,13 @@ export class ImageService {
       .flatten({ background: { r: 255, g: 255, b: 255 } })
       .toBuffer();
     const thumbnailBuffer = await sharp(optimizedBuffer).resize({ height: 256 }).toBuffer();
+    await Promise.all([this.sendFile(fileId, optimizedBuffer), this.sendFile(fileId, thumbnailBuffer)]);
+  }
 
-    const uploadParams = {
-      Bucket: "menzen",
-      Key: `${fileId}.webp`,
-      Body: optimizedBuffer,
-      ContentType: "image/webp",
-    };
-    const thumbnailUploadParams = {
-      Bucket: "menzen",
-      Key: `${fileId}_256.webp`,
-      Body: thumbnailBuffer,
-      ContentType: "image/webp",
-    };
-    await Promise.all([S3.send(new PutObjectCommand(uploadParams)), S3.send(new PutObjectCommand(thumbnailUploadParams))]);
+  private sendFile(fileId: string, buffer: Buffer) {
+    return S3.send(
+      new PutObjectCommand({ Bucket: "menzen", Key: `${fileId}_256.webp`, Body: buffer, ContentType: "image/webp" }),
+    );
   }
 }
 export const imageService = new ImageService(new ImageRepository());
