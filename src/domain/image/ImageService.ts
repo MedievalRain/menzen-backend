@@ -20,13 +20,13 @@ export class ImageService {
       .flatten({ background: { r: 255, g: 255, b: 255 } })
       .toBuffer();
     const thumbnailBuffer = await sharp(optimizedBuffer).resize({ height: 256 }).toBuffer();
-    await Promise.all([this.sendFile(imageId, optimizedBuffer), this.sendFile(imageId, thumbnailBuffer)]);
+    await Promise.all([this.sendFile(imageId, optimizedBuffer), this.sendFile(`${imageId}_thumbnail`, thumbnailBuffer)]);
     await this.imageRepository.saveImageId(imageId, coinId);
   }
 
-  private sendFile(fileId: string, buffer: Buffer) {
+  private sendFile(fileName: string, buffer: Buffer) {
     return S3.send(
-      new PutObjectCommand({ Bucket: "menzen", Key: `${fileId}_thumbnail.webp`, Body: buffer, ContentType: "image/webp" }),
+      new PutObjectCommand({ Bucket: "menzen", Key: `${fileName}.webp`, Body: buffer, ContentType: "image/webp" }),
     );
   }
 }
