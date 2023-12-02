@@ -7,6 +7,7 @@ import { userRouter } from "./routes/userRouter";
 import { collectionRouter } from "./routes/collectionRouter";
 import { columnRouter } from "./routes/columnRouter";
 import { coinRouter } from "./routes/coinRouter";
+import { imageRouter } from "./routes/imageRouter";
 
 const apiRouter = express.Router();
 apiRouter.use(cookieParser());
@@ -18,6 +19,7 @@ apiRouter.use("/user", userRouter);
 apiRouter.use("/collection", collectionRouter);
 apiRouter.use("/column", columnRouter);
 apiRouter.use("/coin", coinRouter);
+apiRouter.use("/image", imageRouter);
 apiRouter.use(errorMiddleware);
 
 export { apiRouter };
