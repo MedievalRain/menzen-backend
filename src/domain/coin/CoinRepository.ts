@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { sql } from "../../config/database/connection";
 import { CollectionNotExistsError } from "../../errors/CollectionNotExistsError";
-import { isUserOwnsCollection } from "../shared/database";
+import { isUserOwnsCoin, isUserOwnsCollection } from "../shared/database";
 import { Coin, CoinValue, GetCoinQuery, GetCoinsQuery } from "./coinTypes";
 import { CoinNotExistsError } from "../../errors/CoinExistsError";
 import { ColumnNotExistError } from "../../errors/ColumnNotExistError";
@@ -46,17 +46,8 @@ export class CoinRepository {
     });
   }
 
-  private async isUserOwnsCoin(coinId: string, userId: string) {
-    const result = await sql`
-    SELECT 1
-    FROM coins
-    JOIN collections ON coins.collection_id=collections.id
-    WHERE coins.id = ${coinId} AND collections.user_id = ${userId}`;
-    return result.count === 1;
-  }
-
   public async getCoin(coinId: string, userId: string): Promise<Coin> {
-    if (!(await this.isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
+    if (!(await isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
     const rows = await sql<GetCoinQuery[]>`
     SELECT c.created_at,cv.column_id,cv.value
     FROM coins c
@@ -75,7 +66,7 @@ export class CoinRepository {
   }
 
   public async editCoinValues(values: CoinValue[], coinId: string, userId: string) {
-    if (!(await this.isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
+    if (!(await isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
     try {
       await sql.begin((sql) =>
         values.map(
@@ -97,7 +88,7 @@ export class CoinRepository {
   }
 
   public async deleteCoin(coinId: string, userId: string) {
-    if (!(await this.isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
+    if (!(await isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
     const result = await sql`DELETE FROM coins WHERE id=${coinId}`;
     if (result.count === 0) throw new CoinNotExistsError();
   }
