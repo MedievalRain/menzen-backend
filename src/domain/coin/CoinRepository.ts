@@ -70,7 +70,7 @@ export class CoinRepository {
       id,
       createdAt,
       values,
-      imageIds: images,
+      imageIds: images || [],
     };
   }
 
