@@ -12,3 +12,15 @@ export const parseUploadImageInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+
+const deleteImageSchema = z.object({
+  imageId: z.string().uuid(),
+});
+
+export const parseDeleteImageInput = (data: unknown) => {
+  try {
+    return deleteImageSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};

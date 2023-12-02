@@ -3,8 +3,8 @@ import { S3 } from "../../config/s3";
 import { CoinNotExistsError } from "../../errors/CoinExistsError";
 import { isUserOwnsCoin } from "../shared/database";
 import { ImageRepository } from "./ImageRepository";
-import { parseUploadImageInput } from "./imageValidation";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { parseDeleteImageInput, parseUploadImageInput } from "./imageValidation";
+import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
 
 export class ImageService {
@@ -28,6 +28,15 @@ export class ImageService {
     return S3.send(
       new PutObjectCommand({ Bucket: "menzen", Key: `${fileName}.webp`, Body: buffer, ContentType: "image/webp" }),
     );
+  }
+  private deleteFile(fileName: string) {
+    return S3.send(new DeleteObjectCommand({ Bucket: "menzen", Key: `${fileName}.webp` }));
+  }
+
+  public async deleteImage(data: unknown, userId: string) {
+    const { imageId } = parseDeleteImageInput(data);
+    await this.imageRepository.deleteImageId(imageId, userId);
+    await Promise.all([this.deleteFile(`${imageId}_thumbnail`), this.deleteFile(imageId)]);
   }
 }
 export const imageService = new ImageService(new ImageRepository());

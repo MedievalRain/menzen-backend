@@ -17,4 +17,13 @@ imageRouter.post("/upload", upload.single("file"), async (req, res, next) => {
   }
 });
 
+imageRouter.delete("/", async (req, res, next) => {
+  try {
+    await imageService.deleteImage(req.query, res.locals.userId);
+    res.status(200).json({ message: "Image deleted" });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export { imageRouter };
