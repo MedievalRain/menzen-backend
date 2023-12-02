@@ -25,7 +25,7 @@ export class ImageService {
 
   private sendFile(fileId: string, buffer: Buffer) {
     return S3.send(
-      new PutObjectCommand({ Bucket: "menzen", Key: `${fileId}_256.webp`, Body: buffer, ContentType: "image/webp" }),
+      new PutObjectCommand({ Bucket: "menzen", Key: `${fileId}_thumbnail.webp`, Body: buffer, ContentType: "image/webp" }),
     );
   }
 }
