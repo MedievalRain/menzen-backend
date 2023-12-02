@@ -13,14 +13,15 @@ export class ImageService {
   public async uploadImage(data: unknown, file: Express.Multer.File, userId: string) {
     const { coinId } = parseUploadImageInput(data);
     if (!(await isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
-    const fileId = randomUUID();
+    const imageId = randomUUID();
     const optimizedBuffer = await sharp(file.buffer)
       .withMetadata({})
       .webp({ quality: 75 })
       .flatten({ background: { r: 255, g: 255, b: 255 } })
       .toBuffer();
     const thumbnailBuffer = await sharp(optimizedBuffer).resize({ height: 256 }).toBuffer();
-    await Promise.all([this.sendFile(fileId, optimizedBuffer), this.sendFile(fileId, thumbnailBuffer)]);
+    await Promise.all([this.sendFile(imageId, optimizedBuffer), this.sendFile(imageId, thumbnailBuffer)]);
+    await this.imageRepository.saveImageId(imageId, coinId);
   }
 
   private sendFile(fileId: string, buffer: Buffer) {
