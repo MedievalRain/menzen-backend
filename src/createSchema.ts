@@ -40,6 +40,11 @@ async function createTables() {
         FOREIGN KEY (column_id) REFERENCES columns(id) ON DELETE CASCADE,
         UNIQUE (coin_id,column_id)
     );`;
+  await sql`CREATE TABLE IF NOT EXISTS coins_images (
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      coin_id UUID NOT NULL,
+      FOREIGN KEY (coin_id) REFERENCES coins(id) ON DELETE CASCADE
+  );`;
 }
 createTables().then(() => {
   console.log("Tables created");
