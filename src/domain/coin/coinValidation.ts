@@ -55,3 +55,15 @@ export const parseEditCoinValuesInput = (data: unknown) => {
     throw new ValidationError();
   }
 };
+
+const deleteCoinSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export const parseDeleteCoinInput = (data: unknown) => {
+  try {
+    return deleteCoinSchema.parse(data);
+  } catch {
+    throw new ValidationError();
+  }
+};

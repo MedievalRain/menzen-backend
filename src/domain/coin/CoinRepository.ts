@@ -95,4 +95,10 @@ export class CoinRepository {
       throw error;
     }
   }
+
+  public async deleteCoin(coinId: string, userId: string) {
+    if (!(await this.isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
+    const result = await sql`DELETE FROM coins WHERE id=${coinId}`;
+    if (result.count === 0) throw new CoinNotExistsError();
+  }
 }

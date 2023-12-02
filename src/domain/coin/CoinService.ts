@@ -1,5 +1,11 @@
 import { CoinRepository } from "./CoinRepository";
-import { parseCreateCoinInput, parseEditCoinValuesInput, parseGetCoinInput, parseGetCoinsInput } from "./coinValidation";
+import {
+  parseCreateCoinInput,
+  parseDeleteCoinInput,
+  parseEditCoinValuesInput,
+  parseGetCoinInput,
+  parseGetCoinsInput,
+} from "./coinValidation";
 
 class CoinService {
   constructor(private coinRepository: CoinRepository) {}
@@ -21,6 +27,11 @@ class CoinService {
   public async editCoinValues(data: unknown, userId: string) {
     const { values, coinId } = parseEditCoinValuesInput(data);
     return this.coinRepository.editCoinValues(values, coinId, userId);
+  }
+
+  public async deleteCoin(data: unknown, userId: string) {
+    const { id: coinId } = parseDeleteCoinInput(data);
+    return this.coinRepository.deleteCoin(coinId, userId);
   }
 }
 export const coinService = new CoinService(new CoinRepository());

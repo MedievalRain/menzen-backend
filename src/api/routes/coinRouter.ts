@@ -38,4 +38,13 @@ coinRouter.post("/", async (req, res, next) => {
     next(error);
   }
 });
+
+coinRouter.delete("/", async (req, res, next) => {
+  try {
+    await coinService.deleteCoin(req.query, res.locals.userId);
+    res.status(200).json({ message: "Coin deleted" });
+  } catch (error) {
+    next(error);
+  }
+});
 export { coinRouter };
