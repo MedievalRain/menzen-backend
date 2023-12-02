@@ -13,4 +13,5 @@ export type ErrorTypes =
   | "COLUMN_NOT_EXIST"
   | "ORDERING_ERROR"
   | "COIN_NOT_EXISTS"
-  | "NO_FILE";
+  | "NO_FILE"
+  | "IMAGE_NOT_EXISTS";
