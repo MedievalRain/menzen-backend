@@ -15,17 +15,19 @@ export class CoinRepository {
       const insertData = values.map((value) => {
         return { ...value, coinId };
       });
-      try {
-        await sql`INSERT INTO coins_values ${sql(insertData)}`;
-        return coinId;
-      } catch (error) {
-        if (error instanceof sql.PostgresError) {
-          if (error.code === "23503") {
-            throw new CollectionNotExistsError();
+      if (insertData.length !== 0) {
+        try {
+          await sql`INSERT INTO coins_values ${sql(insertData)}`;
+        } catch (error) {
+          if (error instanceof sql.PostgresError) {
+            if (error.code === "23503") {
+              throw new CollectionNotExistsError();
+            }
           }
+          throw error;
         }
-        throw error;
       }
+      return coinId;
     });
   }
   public async getCoins(collectionId: string, userId: string): Promise<Coin[]> {
@@ -33,19 +35,21 @@ export class CoinRepository {
     const rows = await sql<GetCoinsQuery[]>`
     SELECT 
     c.id,
-    array_agg(cv.column_id) AS column_ids,
-    array_agg(cv.value) AS values,
+    array_agg(cv.column_id) FILTER (WHERE cv.column_id IS NOT NULL) AS column_ids,
+    array_agg(cv.value) FILTER (WHERE cv.value IS NOT NULL) AS values,
     c.created_at,
     array_agg(DISTINCT ci.id) FILTER (WHERE ci.id IS NOT NULL) AS images
     FROM coins c
-    INNER JOIN coins_values cv ON c.id = cv.coin_id
+    LEFT JOIN coins_values cv ON c.id = cv.coin_id
     LEFT JOIN coin_images ci ON c.id = ci.coin_id
     WHERE c.collection_id = ${collectionId} 
     GROUP BY c.id
     ORDER BY c.created_at ASC`;
     return rows.map((row) => {
-      const values: CoinValue[] = row.columnIds.map((columnId, index) => {
-        return { columnId, value: row.values[index] };
+      const columnIds = row.columnIds || [];
+      const valuesArray = row.values || [];
+      const values: CoinValue[] = columnIds.map((columnId, index) => {
+        return { columnId, value: valuesArray[index] };
       });
 
       return { id: row.id, createdAt: row.createdAt, values, imageIds: row.images || [] };
