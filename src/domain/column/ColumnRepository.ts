@@ -9,8 +9,8 @@ import { isUserOwnsCollection } from "../shared/database";
 export class ColumnRepository {
   public async createColumn(name: string, collectionId: string, userId: string) {
     try {
-      const result = await sql`INSERT INTO columns (name, collection_id, ordering)
-      SELECT ${name}, ${collectionId},COALESCE((SELECT MAX(ordering) + 1 FROM columns WHERE collection_id = ${collectionId}), 0)
+      const result = await sql`INSERT INTO columns (name, collection_id, ordering,type)
+      SELECT ${name}, ${collectionId},COALESCE((SELECT MAX(ordering) + 1 FROM columns WHERE collection_id = ${collectionId}), 0), 'regular'
       WHERE EXISTS (
       SELECT 1 FROM collections
       WHERE id = ${collectionId} AND user_id = ${userId}
@@ -28,7 +28,7 @@ export class ColumnRepository {
 
   public async getColumns(collectionId: string, userId: string): Promise<Column[]> {
     if (await isUserOwnsCollection(collectionId, userId)) {
-      return await sql<Column[]>`SELECT id,name,ordering,enabled FROM columns WHERE collection_id=${collectionId}`;
+      return await sql<Column[]>`SELECT id,name,ordering,enabled,type FROM columns WHERE collection_id=${collectionId}`;
     } else {
       throw new CollectionNotExistsError();
     }
