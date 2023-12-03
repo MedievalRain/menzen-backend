@@ -7,13 +7,15 @@
   "scripts": {
     "start": "nodemon",
     "build": "npx tsc",
-    "schema": "ts-node ./src/createSchema.ts"
+    "schema": "ts-node ./src/createSchema.ts",
+    "populate": "ts-node ./src/populateCollection.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.465.0",
+    "@faker-js/faker": "^8.3.1",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
