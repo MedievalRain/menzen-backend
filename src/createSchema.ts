@@ -16,15 +16,27 @@ async function createTables() {
         created_at TIMESTAMP DEFAULT NOW(),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );`;
+  await sql`
+    CREATE TABLE IF NOT EXISTS column_types (
+    name VARCHAR(128) PRIMARY KEY
+  );`;
+
+  const columnTypes = ["images", "regular"].map((name) => {
+    return { name };
+  });
+  await sql`INSERT INTO column_types ${sql(columnTypes)} ON CONFLICT (name) DO NOTHING;`;
   await sql`CREATE TABLE IF NOT EXISTS columns (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         name VARCHAR(255) NOT NULL,
         collection_id UUID NOT NULL,
+        type VARCHAR(128) NOT NULL,
         ordering INTEGER NOT NULL,
         enabled BOOLEAN NOT NULL DEFAULT true,
         UNIQUE (name,collection_id),
-        FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
+        FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
+        FOREIGN KEY (type) REFERENCES column_types(name) ON DELETE CASCADE
     );`;
+
   await sql`CREATE TABLE IF NOT EXISTS coins (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     collection_id UUID NOT NULL,

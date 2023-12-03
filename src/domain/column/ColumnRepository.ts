@@ -35,7 +35,9 @@ export class ColumnRepository {
   }
   public async deleteColumn(columnId: string, collectionId: string, userId: string) {
     if (await isUserOwnsCollection(collectionId, userId)) {
-      const result = await sql<Column[]>`DELETE FROM columns WHERE id=${columnId} AND collection_id=${collectionId}`;
+      const result = await sql<
+        Column[]
+      >`DELETE FROM columns WHERE id=${columnId} AND collection_id=${collectionId} AND type='regular'`;
       if (result.count === 0) throw new ColumnNotExistError();
     } else {
       throw new CollectionNotExistsError();
