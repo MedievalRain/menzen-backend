@@ -59,9 +59,13 @@ export class CoinRepository {
   public async getCoin(coinId: string, userId: string): Promise<Coin> {
     if (!(await isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
     const rows = await sql<GetCoinQuery[]>`
-    SELECT c.created_at,cv.column_id,cv.value,  array_agg(ci.id) FILTER (WHERE ci.id IS NOT NULL) AS images
+    SELECT 
+      c.created_at,
+      cv.column_id,
+      cv.value,  
+      array_agg(DISTINCT ci.id) FILTER (WHERE ci.id IS NOT NULL) AS images
     FROM coins c
-    INNER JOIN coins_values cv ON c.id = cv.coin_id
+    LEFT JOIN coins_values cv ON c.id = cv.coin_id
     LEFT JOIN coin_images ci ON c.id = ci.coin_id
     WHERE c.id = ${coinId}
     GROUP BY c.created_at, cv.column_id, cv.value`;
