@@ -6,6 +6,7 @@ import { ImageRepository } from "./ImageRepository";
 import { parseDeleteImageInput, parseUploadImageInput } from "./imageValidation";
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
+import { BUCKET_NAME } from "../../config/env";
 
 export class ImageService {
   constructor(private imageRepository: ImageRepository) {}
@@ -26,11 +27,11 @@ export class ImageService {
 
   private sendFile(fileName: string, buffer: Buffer) {
     return S3.send(
-      new PutObjectCommand({ Bucket: "menzen", Key: `${fileName}.webp`, Body: buffer, ContentType: "image/webp" }),
+      new PutObjectCommand({ Bucket: BUCKET_NAME, Key: `${fileName}.webp`, Body: buffer, ContentType: "image/webp" }),
     );
   }
   private deleteFile(fileName: string) {
-    return S3.send(new DeleteObjectCommand({ Bucket: "menzen", Key: `${fileName}.webp` }));
+    return S3.send(new DeleteObjectCommand({ Bucket: BUCKET_NAME, Key: `${fileName}.webp` }));
   }
 
   public async deleteImage(data: unknown, userId: string) {
