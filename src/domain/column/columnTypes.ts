@@ -3,6 +3,7 @@ export interface Column {
   id: string;
   ordering: number;
   enabled: boolean;
+  type: "regular" | "images";
 }
 
 export interface ColumnIdData {
