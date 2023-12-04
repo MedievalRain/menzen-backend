@@ -13,5 +13,4 @@ RUN npm run build
 
 EXPOSE 8000
 
-# Command to run the app
-CMD ["node", "dist/app.js"]
+CMD ["node", "dist/index.js"]
