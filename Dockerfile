@@ -11,8 +11,6 @@ COPY . .
 
 RUN npm run build
 
-RUN npm run schema
-
 EXPOSE 8000
 
 # Command to run the app
