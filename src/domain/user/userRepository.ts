@@ -44,4 +44,11 @@ export class UserRepository {
     }
     return rows[0];
   }
+
+  public async deleteUser(userId: string) {
+    const result = await sql`DELETE FROM users WHERE id=${userId}`;
+    if (result.count === 0) {
+      throw new UserNotExistsError();
+    }
+  }
 }

@@ -32,6 +32,10 @@ class UserService {
       throw new WrongPasswordError();
     }
   }
+
+  public async deleteUser(userId: string) {
+    return this.userRepository.deleteUser(userId);
+  }
 }
 
 export const userService = new UserService(new UserRepository());
