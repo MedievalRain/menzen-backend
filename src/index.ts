@@ -1,11 +1,8 @@
-import express, { Request, Response } from "express";
+import express from "express";
+import { apiRouter } from "./api/api";
 
 const app = express();
-
-app.get("/", (req: Request, res: Response) => {
-  res.send("Application works!");
-});
-
-app.listen(3000, () => {
-  console.log("Application started on port 3000!");
+app.use("/api", apiRouter);
+app.listen(8000, () => {
+  console.log(`⚡️[server]: Server is running at http://127.0.0.1:${8000}`);
 });
