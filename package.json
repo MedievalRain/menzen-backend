@@ -8,8 +8,7 @@
     "start": "nodemon",
     "build": "npx tsc",
     "schema-dev": "ts-node ./src/createSchema.ts",
-    "schema": "node ./dist/createSchema.js",
-    "populate": "ts-node ./src/populateCollection.ts"
+    "schema": "node ./dist/createSchema.js"
   },
   "keywords": [],
   "author": "",
