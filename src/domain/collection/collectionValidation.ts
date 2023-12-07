@@ -1,5 +1,5 @@
 import z from "zod";
-import { ValidationError } from "../../errors/ValidationError";
+import { ApiError } from "../../errors/ApiError";
 
 const newCollectionSchema = z.object({
   name: z.string().min(1),
@@ -9,7 +9,7 @@ export const parseNewCollectionInput = (data: unknown) => {
   try {
     return newCollectionSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };
 
@@ -22,7 +22,7 @@ export const parseRenameCollectionInput = (data: unknown) => {
   try {
     return renameCollectionSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };
 
@@ -34,6 +34,6 @@ export const parseDeleteCollectionInput = (data: unknown) => {
   try {
     return deleteCollectionSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };

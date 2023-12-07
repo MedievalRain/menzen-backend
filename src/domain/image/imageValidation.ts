@@ -1,5 +1,5 @@
 import z from "zod";
-import { ValidationError } from "../../errors/ValidationError";
+import { ApiError } from "../../errors/ApiError";
 
 const uploadImageSchema = z.object({
   coinId: z.string().uuid(),
@@ -9,7 +9,7 @@ export const parseUploadImageInput = (data: unknown) => {
   try {
     return uploadImageSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };
 
@@ -21,6 +21,6 @@ export const parseDeleteImageInput = (data: unknown) => {
   try {
     return deleteImageSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };

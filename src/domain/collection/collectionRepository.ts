@@ -1,8 +1,7 @@
 import { randomUUID } from "crypto";
 import { sql } from "../../config/database/connection";
-import { CollectionNotExistsError } from "../../errors/CollectionNotExistsError";
-import { UserNotExistsError } from "../../errors/UserNotExistsError";
 import { Collection } from "./collectionTypes";
+import { ApiError } from "../../errors/ApiError";
 
 export class CollectionRepository {
   public async createCollection(name: string, userId: string) {
@@ -17,7 +16,7 @@ export class CollectionRepository {
       } catch (error) {
         if (error instanceof sql.PostgresError) {
           if (error.code === "23503") {
-            throw new UserNotExistsError();
+            throw ApiError.UserNotExist();
           }
         }
         throw error;
@@ -27,12 +26,12 @@ export class CollectionRepository {
   }
   public async renameCollection(name: string, collectionId: string, userId: string) {
     const result = await sql`UPDATE collections set ${sql({ name })} WHERE id=${collectionId} AND user_id=${userId}`;
-    if (result.count === 0) throw new CollectionNotExistsError();
+    if (result.count === 0) throw ApiError.CollectionNotExist();
   }
 
   public async deleteCollection(collectionId: string, userId: string) {
     const result = await sql`DELETE FROM collections WHERE id=${collectionId} AND user_id=${userId}`;
-    if (result.count === 0) throw new CollectionNotExistsError();
+    if (result.count === 0) throw ApiError.CollectionNotExist();
   }
 
   public async getCollections(userId: string): Promise<Collection[]> {

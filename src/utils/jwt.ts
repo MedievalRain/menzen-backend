@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_KEY } from "../config/env";
-import { JWTError } from "../errors/JWTError";
+import { ApiError } from "../errors/ApiError";
 
 interface AuthJWT extends JwtPayload {
   id: string;
@@ -12,6 +12,6 @@ export const verifyJWT = (token: string) => {
   try {
     return jwt.verify(token, JWT_KEY) as AuthJWT;
   } catch {
-    throw JWTError;
+    throw ApiError.InvalidJWT();
   }
 };

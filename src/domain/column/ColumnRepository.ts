@@ -1,10 +1,7 @@
 import { sql } from "../../config/database/connection";
-import { CollectionNotExistsError } from "../../errors/CollectionNotExistsError";
-import { ColumnExistsError } from "../../errors/ColumnExistsError";
 import { Column, OrderDirection } from "./columnTypes";
-import { ColumnNotExistError } from "../../errors/ColumnNotExistError";
-import { OrderingError } from "../../errors/OrderingError";
 import { isUserOwnsCollection } from "../shared/database";
+import { ApiError } from "../../errors/ApiError";
 
 export class ColumnRepository {
   public async createColumn(name: string, collectionId: string, userId: string) {
@@ -15,11 +12,11 @@ export class ColumnRepository {
       SELECT 1 FROM collections
       WHERE id = ${collectionId} AND user_id = ${userId}
     );`;
-      if (result.count === 0) throw new CollectionNotExistsError();
+      if (result.count === 0) throw ApiError.CollectionNotExist();
     } catch (error) {
       if (error instanceof sql.PostgresError) {
         if (error.code === "23505") {
-          throw new ColumnExistsError();
+          throw ApiError.ColumnExists();
         }
       }
       throw error;
@@ -30,7 +27,7 @@ export class ColumnRepository {
     if (await isUserOwnsCollection(collectionId, userId)) {
       return await sql<Column[]>`SELECT id,name,ordering,enabled,type FROM columns WHERE collection_id=${collectionId}`;
     } else {
-      throw new CollectionNotExistsError();
+      throw ApiError.CollectionNotExist();
     }
   }
   public async deleteColumn(columnId: string, collectionId: string, userId: string) {
@@ -38,9 +35,9 @@ export class ColumnRepository {
       const result = await sql<
         Column[]
       >`DELETE FROM columns WHERE id=${columnId} AND collection_id=${collectionId} AND type='regular'`;
-      if (result.count === 0) throw new ColumnNotExistError();
+      if (result.count === 0) throw ApiError.ColumnNotExist();
     } else {
-      throw new CollectionNotExistsError();
+      throw ApiError.CollectionNotExist();
     }
   }
   public async renameColumn(name: string, columnId: string, collectionId: string, userId: string) {
@@ -48,9 +45,9 @@ export class ColumnRepository {
       const result = await sql<
         Column[]
       >`UPDATE columns SET name=${name} WHERE id=${columnId} AND collection_id=${collectionId}`;
-      if (result.count === 0) throw new ColumnNotExistError();
+      if (result.count === 0) throw ApiError.ColumnNotExist();
     } else {
-      throw new CollectionNotExistsError();
+      throw ApiError.CollectionNotExist();
     }
   }
 
@@ -59,9 +56,9 @@ export class ColumnRepository {
       const result = await sql<
         Column[]
       >`UPDATE columns SET enabled=${enabled} WHERE id=${columnId} AND collection_id=${collectionId}`;
-      if (result.count === 0) throw new ColumnNotExistError();
+      if (result.count === 0) throw ApiError.ColumnNotExist();
     } else {
-      throw new CollectionNotExistsError();
+      throw ApiError.CollectionNotExist();
     }
   }
 
@@ -74,8 +71,8 @@ export class ColumnRepository {
   }
 
   public async changeColumnOrder(direction: OrderDirection, columnId: string, collectionId: string, userId: string) {
-    if (!(await isUserOwnsCollection(collectionId, userId))) throw new CollectionNotExistsError();
-    if (!(await this.collectionHasColumn(columnId, collectionId))) throw new ColumnNotExistError();
+    if (!(await isUserOwnsCollection(collectionId, userId))) throw ApiError.CollectionNotExist();
+    if (!(await this.collectionHasColumn(columnId, collectionId))) throw ApiError.ColumnNotExist();
 
     await sql.begin(async (sql) => {
       const currentOrderResult = await sql`SELECT ordering FROM columns WHERE collection_id=${collectionId} AND id=${columnId}`;
@@ -89,7 +86,7 @@ export class ColumnRepository {
       }
 
       const swapResult = await swapQuery;
-      if (swapResult.length === 0) throw new OrderingError();
+      if (swapResult.length === 0) throw ApiError.Ordering();
 
       const targetColumnId = swapResult[0].id;
       const targetOrdering = swapResult[0].ordering;

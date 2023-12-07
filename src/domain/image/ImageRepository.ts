@@ -1,6 +1,5 @@
 import { sql } from "../../config/database/connection";
-import { CoinNotExistsError } from "../../errors/CoinExistsError";
-import { ImageNotExistsError } from "../../errors/ImageNotExistsError";
+import { ApiError } from "../../errors/ApiError";
 
 export class ImageRepository {
   public async saveImageId(imageId: string, coinId: string) {
@@ -9,7 +8,7 @@ export class ImageRepository {
     } catch (error) {
       if (error instanceof sql.PostgresError) {
         if (error.code === "23503") {
-          throw new CoinNotExistsError();
+          throw ApiError.CoinNotExist();
         }
       }
       throw error;
@@ -26,7 +25,7 @@ export class ImageRepository {
   }
   public async deleteImageId(imageId: string, userId: string) {
     {
-      if (!(await this.isUserOwnsImage(imageId, userId))) throw new ImageNotExistsError();
+      if (!(await this.isUserOwnsImage(imageId, userId))) throw ApiError.ImageNotExist();
       await sql`DELETE FROM coin_images WHERE id=${imageId}`;
     }
   }

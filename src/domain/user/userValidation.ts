@@ -1,5 +1,5 @@
 import z from "zod";
-import { ValidationError } from "../../errors/ValidationError";
+import { ApiError } from "../../errors/ApiError";
 
 const authInputSchema = z.object({
   email: z.string().email().min(3),
@@ -10,7 +10,7 @@ export const parseAuthInput = (data: unknown) => {
   try {
     return authInputSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };
 
@@ -21,6 +21,6 @@ export const parseUserId = (data: unknown) => {
   try {
     return userIdInputSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };

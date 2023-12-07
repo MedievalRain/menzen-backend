@@ -1,5 +1,5 @@
 import z from "zod";
-import { ValidationError } from "../../errors/ValidationError";
+import { ApiError } from "../../errors/ApiError";
 
 const coinValueSchema = z.object({
   columnId: z.string().uuid(),
@@ -15,7 +15,7 @@ export const parseCreateCoinInput = (data: unknown) => {
   try {
     return createCoinSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };
 
@@ -27,7 +27,7 @@ export const parseGetCoinsInput = (data: unknown) => {
   try {
     return getCoinsSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };
 
@@ -39,7 +39,7 @@ export const parseGetCoinInput = (data: unknown) => {
   try {
     return getCoinSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };
 
@@ -52,7 +52,7 @@ export const parseEditCoinValuesInput = (data: unknown) => {
   try {
     return editCoinValuesSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };
 
@@ -64,6 +64,6 @@ export const parseDeleteCoinInput = (data: unknown) => {
   try {
     return deleteCoinSchema.parse(data);
   } catch {
-    throw new ValidationError();
+    throw ApiError.Validation();
   }
 };

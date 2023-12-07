@@ -1,14 +1,12 @@
 import { randomUUID } from "crypto";
 import { sql } from "../../config/database/connection";
-import { CollectionNotExistsError } from "../../errors/CollectionNotExistsError";
 import { isUserOwnsCoin, isUserOwnsCollection } from "../shared/database";
 import { Coin, CoinValue, GetCoinQuery, GetCoinsQuery } from "./coinTypes";
-import { CoinNotExistsError } from "../../errors/CoinExistsError";
-import { ColumnNotExistError } from "../../errors/ColumnNotExistError";
+import { ApiError } from "../../errors/ApiError";
 
 export class CoinRepository {
   public async createCoin(values: CoinValue[], collectionId: string, userId: string): Promise<string> {
-    if (!(await isUserOwnsCollection(collectionId, userId))) throw new CollectionNotExistsError();
+    if (!(await isUserOwnsCollection(collectionId, userId))) throw ApiError.CollectionNotExist();
     return sql.begin(async (sql) => {
       const coinId = randomUUID();
       await sql`INSERT INTO coins ${sql({ id: coinId, collectionId })}`;
@@ -21,7 +19,7 @@ export class CoinRepository {
         } catch (error) {
           if (error instanceof sql.PostgresError) {
             if (error.code === "23503") {
-              throw new CollectionNotExistsError();
+              throw ApiError.CollectionNotExist();
             }
           }
           throw error;
@@ -31,7 +29,7 @@ export class CoinRepository {
     });
   }
   public async getCoins(collectionId: string, userId: string): Promise<Coin[]> {
-    if (!(await isUserOwnsCollection(collectionId, userId))) throw new CollectionNotExistsError();
+    if (!(await isUserOwnsCollection(collectionId, userId))) throw ApiError.CollectionNotExist();
     const rows = await sql<GetCoinsQuery[]>`
     SELECT 
     c.id,
@@ -57,7 +55,7 @@ export class CoinRepository {
   }
 
   public async getCoin(coinId: string, userId: string): Promise<Coin> {
-    if (!(await isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
+    if (!(await isUserOwnsCoin(coinId, userId))) throw ApiError.CoinNotExist();
     const rows = await sql<GetCoinQuery[]>`
     SELECT 
       c.created_at,
@@ -69,7 +67,7 @@ export class CoinRepository {
     LEFT JOIN coin_images ci ON c.id = ci.coin_id
     WHERE c.id = ${coinId}
     GROUP BY c.created_at, cv.column_id, cv.value`;
-    if (rows.count === 0) throw new CoinNotExistsError();
+    if (rows.count === 0) throw ApiError.CoinNotExist();
     const values: CoinValue[] = rows.map((row) => {
       return { columnId: row.columnId, value: row.value };
     });
@@ -83,7 +81,7 @@ export class CoinRepository {
   }
 
   public async editCoinValues(values: CoinValue[], coinId: string, userId: string) {
-    if (!(await isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
+    if (!(await isUserOwnsCoin(coinId, userId))) throw ApiError.CoinNotExist();
     try {
       await sql.begin((sql) =>
         values.map(
@@ -97,7 +95,7 @@ export class CoinRepository {
     } catch (error) {
       if (error instanceof sql.PostgresError) {
         if (error.code === "23503") {
-          throw new ColumnNotExistError();
+          throw ApiError.ColumnNotExist();
         }
       }
       throw error;
@@ -105,8 +103,8 @@ export class CoinRepository {
   }
 
   public async deleteCoin(coinId: string, userId: string) {
-    if (!(await isUserOwnsCoin(coinId, userId))) throw new CoinNotExistsError();
+    if (!(await isUserOwnsCoin(coinId, userId))) throw ApiError.CoinNotExist();
     const result = await sql`DELETE FROM coins WHERE id=${coinId}`;
-    if (result.count === 0) throw new CoinNotExistsError();
+    if (result.count === 0) throw ApiError.CoinNotExist();
   }
 }
